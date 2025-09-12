@@ -5,18 +5,16 @@ from django.core.validators import MinValueValidator
 
 class News(models.Model):
     CATEGORY_CHOICES = [
-        ('transfer', 'Transfer'),
-        ('update', 'Update'),
-        ('exclusive', 'Exclusive'),
-        ('match', 'Match'),
-        ('rumor', 'Rumor'),
-        ('analysis', 'Analysis'),
-    ]
+        ("jersey", "Jersey"),
+        ("sepatu", "Sepatu"),
+        ("aksesoris", "Aksesoris"),
+]
+
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     content = models.TextField()
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='update')
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     thumbnail = models.URLField(blank=True, null=True)
     news_views = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
