@@ -112,14 +112,14 @@ Menurut saya, bantuan asisten dosen hingga saat ini sudah sangat cukup membantu 
 
 ---
 ##  Bukti Screenshoot Postman
-![Postman XML](xml.jpg)
 Postman XML
-![Postman XML by ID](xml_id.png)
+![Postman XML](xml.png)
 Postman XML by ID
-![Postman JSON](json.jpg)
+![Postman XML by ID](xml_id.png)
 Postman JSON
-![Postman JSON by ID](json_id.png)
+![Postman JSON](json.png)
 Postman JSON by ID
+![Postman JSON by ID](json_id.png)
 
 ## Refrensi 
 Pada pembuatan model, saya menggunakan GPT untuk memberikan bentuk model terbaik dan penempatan size yang sesuai. 
