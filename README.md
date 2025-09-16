@@ -121,5 +121,5 @@ Postman JSON
 Postman JSON by ID
 ![Postman JSON by ID](json_id.png)
 
-## Refrensi 
+## Referensi
 Pada pembuatan model, saya menggunakan GPT untuk memberikan bentuk model terbaik dan penempatan size yang sesuai. 
