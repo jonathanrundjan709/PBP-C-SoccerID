@@ -24,7 +24,9 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.name} (Stock: {self.stock})"
 
+
     @property
     def is_in_stock(self):
         return self.stock > 0
     
+# test
