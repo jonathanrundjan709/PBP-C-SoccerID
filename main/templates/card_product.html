@@ -1,24 +1,26 @@
 {% load static %}
+{% load humanize %} {# opsional kalau mau pakai intcomma #}
+
 <article class="bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden">
   <!-- Thumbnail -->
   <div class="aspect-[16/9] relative overflow-hidden">
     {% if product.thumbnail %}
       <img src="{{ product.thumbnail }}" alt="{{ product.name }}" class="w-full h-full object-cover">
     {% else %}
-      <div class="w-full h-full bg-gray-200"></div>
+      <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-xs">
+        <span>No image</span>
+      </div>
     {% endif %}
 
-    <!-- Category Badge -->
     {% if product.category %}
-      <div class="absolute top-3 left-3 z-10">
+      <div class="absolute top-3 left-3">
         <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-brand text-white shadow-sm">
           {{ product.get_category_display|default:product.category }}
         </span>
       </div>
     {% endif %}
 
-    <!-- Status Badges -->
-    <div class="absolute top-3 right-3 flex space-x-2 z-10">
+    <div class="absolute top-3 right-3 flex space-x-2">
       {% if product.is_featured %}
         <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
           Featured
@@ -32,76 +34,46 @@
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="p-5 relative z-0">
-    <!-- Meta -->
+  <div class="p-5">
     <div class="flex items-center text-sm text-gray-500 mb-3">
-      <span>Rp {{ product.price|floatformat:0 }}</span>
+      {# pilih salah satu format harga: #}
+      <span>Rp {{ product.price|intcomma }}</span>
+      {# atau kalau mau tetap seperti semula: Rp {{ product.price|floatformat:0 }} #}
       <span class="mx-2">•</span>
       <span>Stock: {{ product.stock }}</span>
     </div>
 
-    {% comment %} tentukan apakah id valid UUID (sederhana: cek panjang & tanda '-') {% endcomment %}
-    {% with pid=product.id|stringformat:"s" %}
-    {% with is_uuid=(pid|length >= 36 and '-' in pid) %}
-
-    <!-- Title -->
     <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
-      {% if is_uuid %}
-        <a href="{% url 'main:show_product' pid %}" class="hover:text-brand-dark transition-colors">
-          {{ product.name }}
-        </a>
-      {% else %}
-        <span class="text-gray-500" title="ID produk tidak valid">{{ product.name }}</span>
-      {% endif %}
+      <a href="{% url 'main:show_product' id=product.id %}" class="hover:text-brand-dark transition-colors">
+        {{ product.name }}
+      </a>
     </h3>
 
-    <!-- Excerpt -->
     <p class="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
       {{ product.description|default:"—" }}
     </p>
 
-    <!-- Action Buttons -->
     {% if user.is_authenticated and product.user == user %}
       <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-        {% if is_uuid %}
-          <a href="{% url 'main:show_product' pid %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
-            Detail →
+        <a href="{% url 'main:show_product' id=product.id %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
+          Detail →
+        </a>
+        <div class="flex space-x-2">
+          <a href="{% url 'main:edit_product' id=product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
+            Edit
           </a>
-          <div class="flex space-x-2">
-            <a href="{% url 'main:edit_product' pid %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
-              Edit
-            </a>
-            <form action="{% url 'main:delete_product' pid %}" method="post" onsubmit="return confirm('Yakin hapus produk ini?');">
-              {% csrf_token %}
-              <button type="submit" class="text-red-600 hover:text-red-700 text-sm">Delete</button>
-            </form>
-          </div>
-        {% else %}
-          <div class="flex items-center gap-2 text-xs text-amber-600" title="Produk ini memiliki ID non-UUID sehingga tidak bisa dibuka.">
-            <span class="inline-flex items-center px-2 py-1 rounded bg-amber-50 border border-amber-200">ID tidak valid</span>
-          </div>
-          <div class="flex space-x-2">
-            <span class="text-gray-400 text-sm cursor-not-allowed" aria-disabled="true">Edit</span>
-            <span class="text-gray-400 text-sm cursor-not-allowed" aria-disabled="true">Delete</span>
-          </div>
-        {% endif %}
+          <form action="{% url 'main:delete_product' id=product.id %}" method="post" onsubmit="return confirm('Yakin hapus produk ini?');">
+            {% csrf_token %}
+            <button type="submit" class="text-red-600 hover:text-red-700 text-sm">Delete</button>
+          </form>
+        </div>
       </div>
     {% else %}
       <div class="pt-4 border-t border-gray-100">
-        {% if is_uuid %}
-          <a href="{% url 'main:show_product' pid %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
-            Detail →
-          </a>
-        {% else %}
-          <span class="text-gray-400 text-sm cursor-not-allowed" aria-disabled="true" title="Produk ini memiliki ID non-UUID sehingga tidak bisa dibuka.">
-            Detail →
-          </span>
-        {% endif %}
+        <a href="{% url 'main:show_product' id=product.id %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
+          Detail →
+        </a>
       </div>
     {% endif %}
-
-    {% endwith %}
-    {% endwith %}
   </div>
 </article>
