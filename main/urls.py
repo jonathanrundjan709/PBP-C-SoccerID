@@ -13,8 +13,10 @@ urlpatterns = [
     path('', show_main, name='show_main'),
     path('add-product/', add_product, name='add_product'),
 
-    # Produk (UUID saja, karena model.pk = UUID)
-    path('product/<uuid:id>/', show_product, name='show_product'),
+
+    path('product/<str:id>/', show_product, name='show_product'),
+
+    
     path('product/<uuid:id>/edit/', edit_product, name='edit_product'),
     path('product/<uuid:id>/delete/', delete_product, name='delete_product'),
 
