@@ -13,14 +13,12 @@ urlpatterns = [
     path('', show_main, name='show_main'),
     path('add-product/', add_product, name='add_product'),
 
-
+    # Longgarkan semua ke <str:id> agar UUID maupun angka "4" lolos
     path('product/<str:id>/', show_product, name='show_product'),
+    path('product/<str:id>/edit/', edit_product, name='edit_product'),
+    path('product/<str:id>/delete/', delete_product, name='delete_product'),
 
-    
-    path('product/<uuid:id>/edit/', edit_product, name='edit_product'),
-    path('product/<uuid:id>/delete/', delete_product, name='delete_product'),
-
-    # API
+    # API tetap
     path('xml/', show_xml, name='show_xml'),
     path('json/', show_json, name='show_json'),
     path('xml/<uuid:id>/', show_xml_by_id, name='show_xml_by_id'),
