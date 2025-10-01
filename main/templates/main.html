@@ -20,40 +20,38 @@
   </div>
 </div>
 
-  <!-- Filter pills -->
-  <div class="flex items-center gap-2 mb-6">
-    {% with current_q=request.GET.q|urlencode %}
-      {% with current_filter=request.GET.filter|default:'all' %}
-  
-        <a href="?filter=all{% if current_q %}&q={{ current_q }}{% endif %}"
-           class="inline-flex items-center justify-center px-4 py-2 rounded-xl border transition
-                  {% if current_filter == 'all' %}
-                    bg-brand text-white border-brand hover:bg-brand-dark
-                  {% else %}
-                    bg-white text-slate-700 border-slate-300 hover:border-brand hover:text-brand
-                  {% endif %}">
-          All Products
-        </a>
-  
-        <a href="?filter=mine{% if current_q %}&q={{ current_q }}{% endif %}"
-           class="inline-flex items-center justify-center px-4 py-2 rounded-xl border transition
-                  {% if current_filter == 'mine' %}
-                    bg-brand text-white border-brand hover:bg-brand-dark
-                  {% else %}
-                    bg-white text-slate-700 border-slate-300 hover:border-brand hover:text-brand
-                  {% endif %}">
-          My Products
-        </a>
-  
-      {% endwith %}
+<!-- Filter pills -->
+<div class="flex items-center gap-2 mb-6">
+  {% with current_q=request.GET.q|urlencode %}
+    {% with current_filter=request.GET.filter|default:'all' %}
+      <a href="?filter=all{% if current_q %}&q={{ current_q }}{% endif %}"
+         class="inline-flex items-center justify-center px-4 py-2 rounded-xl border transition
+                {% if current_filter == 'all' %}
+                  bg-brand text-white border-brand hover:bg-brand-dark
+                {% else %}
+                  bg-white text-slate-700 border-slate-300 hover:border-brand hover:text-brand
+                {% endif %}">
+        All Products
+      </a>
+
+      <a href="?filter=mine{% if current_q %}&q={{ current_q }}{% endif %}"
+         class="inline-flex items-center justify-center px-4 py-2 rounded-xl border transition
+                {% if current_filter == 'mine' %}
+                  bg-brand text-white border-brand hover:bg-brand-dark
+                {% else %}
+                  bg-white text-slate-700 border-slate-300 hover:border-brand hover:text-brand
+                {% endif %}">
+        My Products
+      </a>
     {% endwith %}
-  </div>
-</form>
+  {% endwith %}
+</div>
 
 {% if product_list|length == 0 %}
   <section class="text-center py-20 bg-white rounded-2xl border border-slate-200">
     <div class="mx-auto max-w-md">
-      <img src="{% static 'main/static/image/no-news.png' %}" alt="No products"
+      {# Pastikan path ke static benar; biasanya TANPA 'main/static/' #}
+      <img src="{% static 'image/no-news.png' %}" alt="No products"
            class="mx-auto w-48 mb-6" />
       <h2 class="text-xl font-semibold text-slate-800">Belum ada produk</h2>
       <p class="text-slate-600 mt-1">Tambahkan produk pertamamu untuk mengisi katalog.</p>
