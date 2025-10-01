@@ -37,17 +37,21 @@
     <!-- Meta -->
     <div class="flex items-center text-sm text-gray-500 mb-3">
       <span>Rp {{ product.price|floatformat:0 }}</span>
-      {% if product.stock is not None %}
-        <span class="mx-2">•</span>
-        <span>Stock: {{ product.stock }}</span>
-      {% endif %}
+      <span class="mx-2">•</span>
+      <span>Stock: {{ product.stock }}</span>
     </div>
 
     <!-- Title -->
     <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
-      <a href="{% url 'main:show_product' id=product.id %}" class="hover:text-brand-dark transition-colors">
-        {{ product.name }}
-      </a>
+      {% with pid=product.id|stringformat:"s" %}
+        {% if pid|length >= 36 and "-" in pid %}
+          <a href="{% url 'main:show_product' pid %}" class="hover:text-brand-dark transition-colors">
+            {{ product.name }}
+          </a>
+        {% else %}
+          <span class="text-gray-500">{{ product.name }}</span>
+        {% endif %}
+      {% endwith %}
     </h3>
 
     <!-- Excerpt -->
@@ -56,27 +60,41 @@
     </p>
 
     <!-- Action Buttons -->
-    {% if user.is_authenticated and product.user == user %}
-      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-        <a href="{% url 'main:show_product' id=product.id %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
-          Detail →
-        </a>
-        <div class="flex space-x-2">
-          <a href="{% url 'main:edit_product' id=product.id %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
-            Edit
-          </a>
-          <a href="{% url 'main:delete_product' id=product.id %}" class="text-red-600 hover:text-red-700 text-sm transition-colors"
-             onclick="return confirm('Yakin hapus produk ini?');">
-            Delete
-          </a>
+    {% with pid=product.id|stringformat:"s" %}
+      {% if user.is_authenticated and product.user == user %}
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+          {% if pid|length >= 36 and "-" in pid %}
+            <a href="{% url 'main:show_product' pid %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
+              Detail →
+            </a>
+            <div class="flex space-x-2">
+              <a href="{% url 'main:edit_product' pid %}" class="text-gray-600 hover:text-gray-700 text-sm transition-colors">
+                Edit
+              </a>
+              <form action="{% url 'main:delete_product' pid %}" method="post" onsubmit="return confirm('Yakin hapus produk ini?');">
+                {% csrf_token %}
+                <button type="submit" class="text-red-600 hover:text-red-700 text-sm">Delete</button>
+              </form>
+            </div>
+          {% else %}
+            <span class="text-gray-400">Detail →</span>
+            <div class="flex space-x-2">
+              <span class="text-gray-400">Edit</span>
+              <span class="text-gray-400">Delete</span>
+            </div>
+          {% endif %}
         </div>
-      </div>
-    {% else %}
-      <div class="pt-4 border-t border-gray-100">
-        <a href="{% url 'main:show_product' id=product.id %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
-          Detail →
-        </a>
-      </div>
-    {% endif %}
+      {% else %}
+        <div class="pt-4 border-t border-gray-100">
+          {% if pid|length >= 36 and "-" in pid %}
+            <a href="{% url 'main:show_product' pid %}" class="text-brand hover:text-brand-dark font-medium text-sm transition-colors">
+              Detail →
+            </a>
+          {% else %}
+            <span class="text-gray-400">Detail →</span>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endwith %}
   </div>
 </article>
