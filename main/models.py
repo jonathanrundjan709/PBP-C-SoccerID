@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.core.validators import MinValueValidator
+import uuid
 
 
 class Product(models.Model):
@@ -12,8 +13,9 @@ class Product(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    price = models.CharField()
+    price = models.PositiveIntegerField(default=0)
     description = models.TextField()
     thumbnail = models.URLField(blank=True, null=True)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
@@ -29,4 +31,4 @@ class Product(models.Model):
     def is_in_stock(self):
         return self.stock > 0
     
-# test
+

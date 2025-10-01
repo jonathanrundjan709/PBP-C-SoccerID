@@ -1,26 +1,91 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>{{ product.name }} · SoccerID</title>
+{% endblock meta %}
+
 {% block content %}
-<p><a href="{% url 'main:show_main' %}"><button>← Back to Product List</button></a></p>
+<section class="min-h-[calc(100vh-120px)]">
+  <!-- Back (breadcrumb) -->
+  <div class="mb-5">
+    <a href="{% url 'main:show_main' %}"
+       class="inline-flex items-center gap-2 text-brand hover:text-brand-dark font-semibold">
+      <span class="-ml-1">←</span> Kembali ke daftar
+    </a>
+  </div>
 
-<h1>{{ product.name }}</h1>
-<p>
-  <b>Kategori:</b> {{ product.category }}
-  {% if product.is_featured %} | <b>Featured</b>{% endif %}
-  | <b>Harga:</b> Rp{{ product.price }}
-</p>
+  <!-- Main layout -->
+  <div class="grid lg:grid-cols-12 gap-8">
+    <!-- Left: big image, clean white -->
+    <div class="lg:col-span-7">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div class="w-full h-[48vh] sm:h-[58vh] lg:h-[68vh] flex items-center justify-center">
+          {% if product.thumbnail %}
+            <img src="{{ product.thumbnail }}"
+                 alt="{{ product.name }}"
+                 class="max-h-full max-w-full object-contain">
+          {% else %}
+            <div class="text-slate-400">No Image</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
-{% if product.thumbnail %}
-<img src="{{ product.thumbnail }}" alt="Product thumbnail" width="300">
-<br /><br />
-{% endif %}
+    <!-- Right: info panel -->
+    <aside class="lg:col-span-5 lg:sticky lg:top-24">
+      <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 lg:p-7">
+        <!-- Title + category -->
+        <h1 class="text-3xl font-extrabold leading-tight text-slate-900">{{ product.name }}</h1>
+        {% if product.category %}
+          <p class="mt-2 text-sm text-slate-500">
+            Kategori:
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700">
+              {{ product.get_category_display|default:product.category }}
+            </span>
+          </p>
+        {% endif %}
 
-<p>{{ product.description }}</p>
+        <!-- Price + stock -->
+        <div class="mt-5 flex items-center flex-wrap gap-3">
+          <p class="text-3xl font-black tracking-tight">Rp {{ product.price|floatformat:0 }}</p>
+          {% if product.is_in_stock %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-700">
+              Stock: {{ product.stock }}
+            </span>
+          {% else %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-rose-100 text-rose-700">
+              Habis
+            </span>
+          {% endif %}
+        </div>
 
-{% if product.user %}
-    <p>Author: {{ product.user.username }}</p>
-{% else %}
-    <p>Author: Anonymous</p>
-{% endif %}
+        <!-- Description -->
+        <div class="mt-5 text-slate-700 leading-relaxed">
+          <p>{{ product.description|default:"Tidak ada deskripsi." }}</p>
+        </div>
 
+        <!-- Actions (tanpa link 'Kembali ke daftar') -->
+        <div class="mt-6 flex items-center gap-3">
+          {% if user.is_authenticated and product.user == user %}
+            <a href="{% url 'main:edit_product' product.id %}"
+               class="px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-50">
+              Edit
+            </a>
+            <a href="{% url 'main:delete_product' product.id %}"
+               class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700"
+               onclick="return confirm('Hapus produk ini?');">
+              Delete
+            </a>
+          {% endif %}
+        </div>
+
+        <!-- Meta -->
+        <p class="mt-4 text-xs text-slate-500">
+          Author: {{ product.user.username|default:"Anonymous" }}
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
 {% endblock content %}
-

@@ -1,0 +1,68 @@
+/* Variabel warna brand (opsional) */
+:root {
+    --brand: #f97316;      /* orange utama */
+    --brand-dark: #ea580c; /* hover/dark */
+    --ring: rgba(249, 115, 22, 0.25); /* ring lembut */
+  }
+  
+  /* Input di dalam .form-style saja (fix selector) */
+  .form-style form input,
+  .form-style form textarea,
+  .form-style form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;   /* slate-200 */
+    border-radius: 0.5rem;       /* rounded-lg */
+    background: #fff;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  
+  /* Focus state (fix selector + warna brand) */
+  .form-style form input:focus,
+  .form-style form textarea:focus,
+  .form-style form select:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  
+  /* Checkbox hanya di .form-style (fix selector) */
+  .form-style form input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    padding: 0;
+    border: 1px solid #d1d5db;   /* slate-300 */
+    border-radius: 0.375rem;     /* rounded-md */
+    background-color: #fff;
+    cursor: pointer;
+    position: relative;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  
+  /* Checked (ganti hijau → orange) */
+  .form-style form input[type="checkbox"]:checked {
+    background-color: var(--brand);
+    border-color: var(--brand);
+  }
+  
+  /* Tanda centang */
+  .form-style form input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  
+  /* Focus ring untuk checkbox */
+  .form-style form input[type="checkbox"]:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  

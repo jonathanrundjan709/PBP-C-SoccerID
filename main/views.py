@@ -109,4 +109,33 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
+def edit_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    
+    if product.user != request.user:
+        return redirect('main:show_main')
+    
+    form = ProductForm(request.POST or None, instance=product)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
 
+    context = {
+        'form': form,
+        'product': product
+    }
+
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    
+    # Check if user is the owner
+    if product.user != request.user:
+        messages.error(request, 'You are not allowed to delete this product.')
+        return redirect('main:show_main')
+    
+    product_name = product.name
+    product.delete()
+    messages.success(request, f'Product "{product_name}" has been deleted successfully!')
+    return HttpResponseRedirect(reverse('main:show_main'))

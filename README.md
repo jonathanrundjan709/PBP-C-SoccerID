@@ -227,6 +227,76 @@ SECURE_SSL_REDIRECT = True
    - Gunakan `{% csrf_token %}` di semua form.
    - Set `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, dan cookie secure saat deploy.
 
+---
+## Tugas 5
+
+### Urutan Prioritas CSS Selector
+Jika beberapa CSS selector mengenai elemen HTML yang sama, prioritasnya diatur oleh **specificity** (dari tertinggi ke terendah):
+- **Inline style** (`style=""`) paling tinggi.
+- **ID selector** (`#id`) lebih tinggi daripada class.
+- **Class, pseudo-class, attribute selector** (`.class`, `:hover`, `[attr]`) lebih tinggi daripada tag selector.
+- **Tag/element selector** (`div`, `p`) paling rendah.
+- Jika specificity sama, aturan yang muncul **terakhir** di file CSS yang digunakan yang menang.
+- `!important` pada aturan yang sama origin-nya akan mengalahkan aturan biasa.
 
 
+### Pentingnya Responsive Design
+Responsive design penting agar tampilan web menyesuaikan berbagai ukuran layar (mobile, tablet, desktop) sehingga:
+1. UX lebih baik: tidak perlu zoom/scroll horizontal, navigasi mudah.
+2. Akses lebih luas: nyaman di semua perangkat.
+3. SEO: mendukung mobile-first indexing & Core Web Vitals.
+4. Maintainability: satu basis CSS untuk berbagai viewport.
 
+**Contoh:**
+* **Sudah responsif**: GitHub / Medium / Airbnb (navbar adaptif, grid berubah kolom, font/gambar fluid).
+* **Belum/buruk responsif (pola umum)**: situs lama fixed-width (960px), perlu zoom, scroll horizontal di ponsel, tabel melebar.
+
+
+### Perbedaan Margin, Border, Padding
+- **Margin**: ruang di luar border elemen, memisahkan antar elemen.
+- **Border**: garis tepi di antara padding dan margin.
+- **Padding**: ruang di dalam elemen antara content dan border.
+
+Implementasi:
+```css
+.card {
+  width: 320px;
+  background: #fff;
+
+  border: 1px solid #e5e7eb;  /* BORDER */
+  padding: 16px;               /* PADDING (di dalam border) */
+  margin: 12px;                /* MARGIN (di luar border) */
+
+  border-radius: 12px;
+}
+```
+
+### Flexbox vs Grid Layout
+
+- **Flexbox**: 1 dimensi, baris atau kolom. Cocok untuk navbar, toolbar, alignment vertikal/horizontal, list yang perlu wrap.
+
+- **Grid**: mengatur layout dalam dua dimensi (row + column). Cocok untuk dashboard, galeri, atau tata letak kompleks.
+
+```css
+C.gallery {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+```
+
+### Implementasi Checklist Step-by-Step
+1. **Tambahkan CSS Framework**  
+   Menggunakan TailwindCSS untuk styling halaman
+
+2. **Gunakan Flexbox di Bagian yang Sederhana**  
+   - Navbar: elemen menu dibuat sejajar horizontal dengan `flex`.
+   - Tombol pada card: menggunakan `flex` untuk mengatur tombol edit dan hapus sejajar.
+
+3. **Gunakan Grid di Layout **  
+   - Halaman daftar product: susun card product dalam grid (`grid grid-cols-3` di Tailwind misalnya).
+
+4. **Test Responsif**  
+   - Periksa di ukuran layar mobile dan desktop.
+
+NOTES : Pada pengerjaan Tugas 5 saya dibantu oleh AI untuk design dan memahami syntax yang ada

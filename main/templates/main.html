@@ -1,61 +1,75 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block meta %}
+<title>Products · SoccerID</title>
+{% endblock meta %}
+
 {% block content %}
-<h1>SoccerID</h1>
-
-<h5>NPM: </h5>
-<p>{{ npm }}</p>
-
-<h5>Name:</h5>
-<p>{{ name }}</p>
-
-<h5>Class:</h5>
-<p>{{ class }}</p>
-
-<a href="{% url 'main:add_product' %}">
-  <button>+ Add Product</button>
-</a>
-
-<a href="{% url 'main:logout' %}">
-  <button>Logout</button>
-</a>
-
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-<hr>
-
-<a href="?filter=all">
-  <button type="button">All Product</button>
-</a>
-<a href="?filter=my">
-  <button type="button">My Product</button>
-</a> 
-
-{% if not product_list %}
-<p>Belum ada data product pada SoccerID.</p>
-{% else %}
-
-{% for product in product_list %}
-<div>
-  <h2><a href="{% url 'main:show_product' product.id %}">{{ product.name }}</a></h2>
-
-  <p>
-    <b>Kategori:</b> {{ product.category }}
-    {% if product.is_featured %} | <b>Featured</b>{% endif %}
-    | <b>Harga:</b> Rp{{ product.price }}
-  </p>
-
-
-  {% if product.thumbnail %}
-  <img src="{{ product.thumbnail }}" alt="{{ product.name }}" width="150" height="100">
-  <br />
-  {% endif %}
-
-  <p>{{ product.description|truncatewords:25 }}...</p>
-
-  <p><a href="{% url 'main:show_product' product.id %}"><button>Read More</button></a></p>
+<!-- Heading + Actions -->
+<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight text-brand-dark">Katalog Produk</h1>
+    <p class="text-slate-600">Jelajahi, tambahkan, dan kelola item kamu.</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="{% url 'main:add_product' %}" 
+       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition">
+      <span>＋</span> Tambah Produk
+    </a>
+  </div>
 </div>
 
-<hr>
-{% endfor %}
+  <!-- Filter pills -->
+  <div class="flex items-center gap-2 mb-6">
+    {% with current_q=request.GET.q|urlencode %}
+      {% with current_filter=request.GET.filter|default:'all' %}
+  
+        <a href="?filter=all{% if current_q %}&q={{ current_q }}{% endif %}"
+           class="inline-flex items-center justify-center px-4 py-2 rounded-xl border transition
+                  {% if current_filter == 'all' %}
+                    bg-brand text-white border-brand hover:bg-brand-dark
+                  {% else %}
+                    bg-white text-slate-700 border-slate-300 hover:border-brand hover:text-brand
+                  {% endif %}">
+          All Products
+        </a>
+  
+        <a href="?filter=mine{% if current_q %}&q={{ current_q }}{% endif %}"
+           class="inline-flex items-center justify-center px-4 py-2 rounded-xl border transition
+                  {% if current_filter == 'mine' %}
+                    bg-brand text-white border-brand hover:bg-brand-dark
+                  {% else %}
+                    bg-white text-slate-700 border-slate-300 hover:border-brand hover:text-brand
+                  {% endif %}">
+          My Products
+        </a>
+  
+      {% endwith %}
+    {% endwith %}
+  </div>
+</form>
 
+{% if product_list|length == 0 %}
+  <section class="text-center py-20 bg-white rounded-2xl border border-slate-200">
+    <div class="mx-auto max-w-md">
+      <img src="{% static 'main/static/image/no-news.png' %}" alt="No products"
+           class="mx-auto w-48 mb-6" />
+      <h2 class="text-xl font-semibold text-slate-800">Belum ada produk</h2>
+      <p class="text-slate-600 mt-1">Tambahkan produk pertamamu untuk mengisi katalog.</p>
+      <a href="{% url 'main:add_product' %}"
+         class="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition">
+        + Tambah Produk
+      </a>
+    </div>
+  </section>
+{% else %}
+  <!-- Grid cards -->
+  <section class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    {% for product in product_list %}
+      {% include "card_product.html" with product=product %}
+    {% endfor %}
+  </section>
 {% endif %}
-{% endblock %}
+
+{% endblock content %}
