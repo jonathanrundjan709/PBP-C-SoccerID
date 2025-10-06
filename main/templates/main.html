@@ -20,6 +20,12 @@
   </div>
 </div>
 
+<button
+onclick="showToast('Sample Title', 'This is a sample message for the toast notification.')"
+>
+Click to Show Toast
+</button>
+
 <!-- Filter pills -->
 <div class="flex items-center gap-2 mb-6">
   {% with current_q=request.GET.q|urlencode %}

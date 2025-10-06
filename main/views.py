@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout  # authenticate tidak dipakai
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect, JsonResponse
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -79,8 +80,23 @@ def show_xml(request):
                         content_type="application/xml")
 
 def show_json(request):
-    return HttpResponse(serializers.serialize("json", Product.objects.all()),
-                        content_type="application/json")
+    news_list = News.objects.all()
+    data = [
+        {
+            'id': str(news.id),
+            'title': news.title,
+            'content': news.content,
+            'category': news.category,
+            'thumbnail': news.thumbnail,
+            'news_views': news.news_views,
+            'created_at': news.created_at.isoformat() if news.created_at else None,
+            'is_featured': news.is_featured,
+            'user_id': news.user_id,
+        }
+        for news in news_list
+    ]
+
+    return JsonResponse(data, safe=False)
 
 def show_xml_by_id(request, id):  # <uuid:id> di urls → nama param harus `id`
     obj = get_object_or_404(Product, pk=id)

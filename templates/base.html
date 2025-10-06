@@ -92,7 +92,9 @@
   <!-- Main Content -->
   <main class="container mx-auto flex-1 px-6 py-8">
     {% block content %}{% endblock content %}
+
   </main>
+  {% include 'toast.html' %}
 
   <!-- JS kecil untuk toggle menu mobile -->
   <script>
