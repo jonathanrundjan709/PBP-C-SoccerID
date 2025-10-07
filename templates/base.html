@@ -19,9 +19,11 @@
   </script>
 </head>
 <body class="bg-orange-50 text-slate-900 min-h-screen flex flex-col">
-  <!-- Navbar Component -->
-  {% include 'navbar.html' %}
 
+  {% if user.is_authenticated %}
+    {% include 'navbar.html' %}
+  {% endif %}
+  
   <!-- Flash messages -->
   {% if messages %}
     <div class="container mx-auto mt-4 space-y-2 px-6">
