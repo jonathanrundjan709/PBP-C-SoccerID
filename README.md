@@ -300,3 +300,179 @@ C.gallery {
    - Periksa di ukuran layar mobile dan desktop.
 
 NOTES : Pada pengerjaan Tugas 5 saya dibantu oleh AI untuk design dan memahami syntax yang ada
+
+---
+## Tugas 6
+### Perbedaan antara synchronous request dan asynchronous request
+
+**Synchronous Request:**
+- Eksekusi kode berjalan secara berurutan (blocking)
+- Browser akan "freeze" atau tidak responsif saat menunggu response dari server
+- Halaman web tidak dapat berinteraksi dengan user sampai request selesai
+- Contoh: Form submission biasa yang menyebabkan page reload
+
+**Asynchronous Request:**
+- Eksekusi kode tidak memblokir proses lainnya (non-blocking)
+- Browser tetap responsif dan user dapat berinteraksi dengan halaman
+- Request dikirim di background, dan response akan diproses ketika tersedia
+- Contoh: AJAX request yang mengupdate data tanpa reload halaman
+
+**Ilustrasi Perbedaan:**
+```javascript
+// Synchronous (blocking)
+const result = expensiveOperation(); // Halaman freeze
+console.log(result);
+
+// Asynchronous (non-blocking)
+fetch('/api/data')
+  .then(response => response.json())
+  .then(data => console.log(data)); // Halaman tetap responsif
+console.log('Request sent'); // Ini dijalankan dulu sebelum data diterima
+```
+
+---
+
+### Bagaimana AJAX bekerja di Django (alur request–response)
+
+**Alur Kerja AJAX di Django:**
+
+1. **Client-Side (JavaScript):**
+   - User melakukan aksi (klik button, submit form, dll)
+   - JavaScript menangkap event tersebut
+   - Membuat AJAX request menggunakan `fetch()` atau `XMLHttpRequest`
+   - Mengirim data dalam format JSON ke endpoint Django
+
+2. **Server-Side (Django):**
+   - Django menerima request di view function yang sesuai dengan URL
+   - View memproses data (validasi, manipulasi database, dll)
+   - View mengembalikan response dalam format JSON menggunakan `JsonResponse`
+
+3. **Client-Side (JavaScript - Response):**
+   - JavaScript menerima response dari server
+   - Parse JSON response
+   - Update DOM secara dinamis tanpa reload halaman
+   - Tampilkan feedback ke user (toast notification, dll)
+
+---
+
+### Keuntungan menggunakan AJAX dibandingkan render biasa di Django
+
+**Keuntungan AJAX:**
+
+1. **User Experience Lebih Baik:**
+   - Tidak ada page reload yang mengganggu
+   - Interaksi terasa lebih smooth dan cepat
+   - Loading hanya pada bagian yang dibutuhkan
+
+2. **Performa Lebih Efisien:**
+   - Hanya transfer data yang diperlukan (JSON) bukan seluruh HTML
+   - Bandwidth lebih hemat
+   - Server load lebih ringan karena tidak perlu render template
+
+3. **Responsivitas Tinggi:**
+   - User dapat tetap berinteraksi dengan halaman saat request berlangsung
+   - Multiple request dapat dilakukan secara bersamaan
+   - Real-time updates dapat dilakukan dengan mudah
+
+4. **Separation of Concerns:**
+   - Backend fokus pada data dan logic (API)
+   - Frontend fokus pada presentation dan UX
+   - Lebih mudah untuk maintenance dan scaling
+
+5. **Modern Web Development:**
+   - Mendukung Single Page Application (SPA)
+   - Lebih mudah untuk integrasi dengan mobile apps
+   - API dapat digunakan ulang untuk berbagai platform
+
+
+
+### Cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django
+
+**Praktik Keamanan AJAX:**
+
+1. **CSRF Protection:**
+   ```javascript
+   // Selalu sertakan CSRF token di header
+   headers: {
+       'X-CSRFToken': getCookie('csrftoken')
+   }
+   ```
+   - Django secara default memerlukan CSRF token untuk POST request
+   - Token ini mencegah Cross-Site Request Forgery attacks
+
+2. **HTTPS (SSL/TLS):**
+   - Gunakan HTTPS untuk enkripsi data saat transit
+   - Hindari man-in-the-middle attacks
+   - Wajib untuk aplikasi production
+
+3. **Input Validation:**
+   ```python
+   # Server-side validation
+   if len(password) < 8:
+       return JsonResponse({
+           'status': 'error',
+           'message': 'Password too short'
+       }, status=400)
+   ```
+   - Validasi di server, tidak cukup hanya di client
+   - Sanitize input untuk mencegah SQL Injection
+   - Validasi tipe data dan format
+
+4. **Authentication & Authorization:**
+   ```python
+   @login_required
+   def protected_view(request):
+       # Verify user has permission
+       if product.user != request.user:
+           return JsonResponse({'error': 'Unauthorized'}, status=403)
+   ```
+
+5. **Rate Limiting:**
+   - Batasi jumlah request per IP/user
+   - Cegah brute force attacks
+   - Gunakan library seperti `django-ratelimit`
+
+6. **Secure Password Handling:**
+   - Jangan pernah kirim plain password di response
+   - Django secara default menggunakan PBKDF2 untuk hash password
+   - Gunakan password validators Django
+
+7. **Content Security Policy (CSP):**
+   - Set header CSP untuk mencegah XSS attacks
+   - Batasi sumber JavaScript yang dapat dieksekusi
+
+8. **Error Handling:**
+   ```python
+   # Jangan expose sensitive info di error message
+   return JsonResponse({
+       'status': 'error',
+       'message': 'Invalid credentials'  # Generic message
+   })
+   ```
+---
+
+### Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website
+
+**Dampak Positif AJAX terhadap UX:**
+
+1. **Interaksi Lebih Smooth:**
+   - Tidak ada "white flash" saat page reload
+   - Transisi antar state lebih halus
+
+2. **Feedback Instant:**
+   - Validasi real-time
+   - Toast notifications yang tidak mengganggu
+
+3. **Perceived Performance:**
+   - Website terasa lebih cepat
+   - User dapat melanjutkan interaksi saat loading
+
+4. **Multi-tasking:**
+   - User dapat melakukan beberapa aksi sekaligus
+   - Background operations tidak menghalangi interaksi
+
+5. **State Preservation:**
+   - Form input tidak hilang
+   - Scroll position dipertahankan
+
+---

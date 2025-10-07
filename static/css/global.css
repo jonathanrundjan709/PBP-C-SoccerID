@@ -5,7 +5,6 @@
     --ring: rgba(249, 115, 22, 0.25); /* ring lembut */
   }
   
-  /* Input di dalam .form-style saja (fix selector) */
   .form-style form input,
   .form-style form textarea,
   .form-style form select {
@@ -17,7 +16,7 @@
     transition: border-color .2s, box-shadow .2s;
   }
   
-  /* Focus state (fix selector + warna brand) */
+  
   .form-style form input:focus,
   .form-style form textarea:focus,
   .form-style form select:focus {
@@ -26,7 +25,6 @@
     box-shadow: 0 0 0 3px var(--ring);
   }
   
-  /* Checkbox hanya di .form-style (fix selector) */
   .form-style form input[type="checkbox"] {
     width: 1.1rem;
     height: 1.1rem;
@@ -41,13 +39,11 @@
     -moz-appearance: none;
   }
   
-  /* Checked (ganti hijau → orange) */
   .form-style form input[type="checkbox"]:checked {
     background-color: var(--brand);
     border-color: var(--brand);
   }
   
-  /* Tanda centang */
   .form-style form input[type="checkbox"]:checked::after {
     content: '✓';
     position: absolute;
@@ -59,7 +55,6 @@
     font-size: 0.8rem;
   }
   
-  /* Focus ring untuk checkbox */
   .form-style form input[type="checkbox"]:focus {
     outline: none;
     border-color: var(--brand);

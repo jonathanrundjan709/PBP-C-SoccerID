@@ -3,7 +3,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- penting supaya benar2 responsif di mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   {% block meta %}{% endblock meta %}
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,60 +19,8 @@
   </script>
 </head>
 <body class="bg-orange-50 text-slate-900 min-h-screen flex flex-col">
-  <!-- Navbar -->
-  <header class="sticky top-0 z-40 w-full border-b bg-white/95 backdrop-blur shadow-sm">
-    <!-- jadikan relative agar menu mobile absolute bisa nempel di sini -->
-    <nav class="container mx-auto flex items-center justify-between py-4 px-6 relative">
-      <!-- Logo -->
-      <a href="{% url 'main:show_main' %}" class="font-extrabold text-2xl text-brand tracking-tight">
-        Soccer<span class="text-brand-dark">ID</span>
-      </a>
-
-    <!-- Tombol hamburger -->
-    <button id="nav-toggle"
-            class="md:hidden inline-flex flex-col justify-between w-8 h-6 p-1 border rounded-lg bg-white"
-            aria-controls="nav-menu"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="block w-full h-0.5 bg-slate-800"></span>
-      <span class="block w-full h-0.5 bg-slate-800"></span>
-      <span class="block w-full h-0.5 bg-slate-800"></span>
-    </button>
-
-      <!-- Menu -->
-      <ul id="nav-menu"
-          class="hidden
-                 absolute left-0 right-0 top-full z-30
-                 mx-0 bg-white border-b border-slate-200 shadow-md
-                 flex-col gap-2 p-4
-                 md:static md:flex md:flex-row md:items-center md:gap-6 md:p-0 md:shadow-none md:border-0 md:bg-transparent">
-        <li><a href="{% url 'main:show_main' %}" class="block px-2 py-2 hover:text-brand-dark transition">Home</a></li>
-        <li><a href="{% url 'main:add_product' %}" class="block px-2 py-2 hover:text-brand-dark transition">Add Product</a></li>
-        {% if user.is_authenticated %}
-          <li class="px-2 py-2 text-slate-600">Hi, <span class="font-semibold">{{ user.username }}</span></li>
-          <li>
-            <a href="{% url 'main:logout' %}"
-               class="block px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition">
-               Logout
-            </a>
-          </li>
-        {% else %}
-          <li>
-            <a href="{% url 'main:login' %}"
-               class="block px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition">
-               Login
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'main:register' %}"
-               class="block px-4 py-2 border rounded-lg hover:bg-brand-light/30 transition">
-               Register
-            </a>
-          </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </header>
+  <!-- Navbar Component -->
+  {% include 'navbar.html' %}
 
   <!-- Flash messages -->
   {% if messages %}
@@ -92,50 +39,52 @@
   <!-- Main Content -->
   <main class="container mx-auto flex-1 px-6 py-8">
     {% block content %}{% endblock content %}
-
   </main>
+  
+  <!-- Toast Component -->
   {% include 'toast.html' %}
 
-  <!-- JS kecil untuk toggle menu mobile -->
+  <!-- Global Scripts -->
   <script>
-    (function () {
-      const btn  = document.getElementById('nav-toggle');
-      const menu = document.getElementById('nav-menu');
-
-      if (!btn || !menu) return;
-
-      // buka/tutup menu
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const hidden = menu.classList.toggle('hidden');
-        btn.setAttribute('aria-expanded', String(!hidden));
-      });
-
-      // klik di luar → tutup menu
-      document.addEventListener('click', function (e) {
-        if (!menu.classList.contains('hidden')
-            && !menu.contains(e.target)
-            && !btn.contains(e.target)) {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
+    // CSRF Token Helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
         }
-      });
+      }
+      return cookieValue;
+    }
 
-      // saat viewport melebar ke md↑, pastikan menu tampil sebagai flex (tanpa hidden)
-      const mq = window.matchMedia('(min-width: 768px)');
-      const syncMenu = () => {
-        if (mq.matches) {
-          menu.classList.remove('hidden');
-          btn.setAttribute('aria-expanded', 'true');
-        } else {
-          // default tertutup di mobile
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
+    // Global Logout Function
+    async function handleLogout() {
+      try {
+        const response = await fetch('/api/auth/logout/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+          showToast('Logout Berhasil', data.message, 'success', 1500);
+          setTimeout(() => {
+            window.location.href = '/login/';
+          }, 1000);
         }
-      };
-      syncMenu();
-      mq.addEventListener ? mq.addEventListener('change', syncMenu) : mq.addListener(syncMenu);
-    })();
+      } catch (error) {
+        showToast('Error', 'An error occurred during logout', 'error');
+      }
+    }
   </script>
 </body>
 </html>
