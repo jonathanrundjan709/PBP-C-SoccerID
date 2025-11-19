@@ -31,3 +31,11 @@ class Product(models.Model):
     def is_in_stock(self):
         return self.stock > 0
     
+class Book(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+
+class Author(models.Model):
+    books = models.ManyToManyField(Book)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    bio = models.TextField()

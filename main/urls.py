@@ -14,13 +14,18 @@ from main.views import (
     get_product_ajax,
     login_ajax,
     register_ajax,
-    logout_ajax
+    logout_ajax,
+    proxy_image,
+    create_product_flutter,
+
 )
 
 app_name = 'main'
 
 urlpatterns = [
     path('', show_main, name='show_main'),
+    path('proxy-image/', proxy_image, name='proxy_image'),
+    path('create-flutter/', create_product_flutter, name='create_product_flutter'),
 
     # Old endpoints (fallback)
     path('add-product/', add_product, name='add_product'),

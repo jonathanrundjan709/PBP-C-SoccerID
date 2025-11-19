@@ -1,6 +1,6 @@
 # main/views.py
+import requests
 import datetime
-import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core import serializers
@@ -14,6 +14,12 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.html import strip_tags
+import json
+from django.http import JsonResponse
+
 
 @login_required(login_url='/login')
 def show_main(request):
@@ -314,8 +320,18 @@ def show_xml(request):
     return HttpResponse(serializers.serialize("xml", Product.objects.all()),
                         content_type="application/xml")
 
+@login_required(login_url='/login')
 def show_json(request):
-    products = Product.objects.all()
+    # Ambil parameter filter dari query string
+    filter_type = request.GET.get('filter', 'all')
+    
+    if filter_type == 'my':
+        # Filter hanya produk milik user yang login
+        products = Product.objects.filter(user=request.user)
+    else:
+        # Tampilkan semua produk
+        products = Product.objects.all()
+    
     data = []
     for product in products:
         data.append({
@@ -370,3 +386,51 @@ def logout_user(request):
     response.delete_cookie('last_login')
     messages.success(request, 'You have been logged out successfully.')
     return response
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper content type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg')
+        )
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
+
+@csrf_exempt
+@login_required(login_url='/login')  
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))
+        price = int(data.get("price", 0))
+        description = strip_tags(data.get("description", ""))
+        category = data.get("category", "")
+        thumbnail = data.get("thumbnail", "")
+        stock = int(data.get("stock", 0))
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        new_product = Product.objects.create(
+            user=user,
+            name=name,
+            price=price,
+            description=description,
+            category=category,
+            thumbnail=thumbnail,
+            stock=stock,
+            is_featured=is_featured
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
